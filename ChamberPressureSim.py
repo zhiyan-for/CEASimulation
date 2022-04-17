@@ -39,7 +39,7 @@ def mdot_nozzle_calc(p_chamber, OF):
     CHAMBER_TEMP = 2000
     (MOLECULAR_MASS, gamma) = C.get_Chamber_MolWt_gamma(p_chamber, OF)
     cp = C.get_Chamber_Cp(p_chamber, OF) #in kJ/kg-K
-    R = cp + (cp/gamma)
+    R = cp - (cp/gamma)
 
     return ((data["throat_area"] * p_chamber) / np.sqrt(CHAMBER_TEMP)) * np.sqrt(gamma / R) * math.pow(
         (gamma + 1) / 2, -(gamma + 1) / (2 * (gamma - 1)))
