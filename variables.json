@@ -1,0 +1,16 @@
+{
+  "tank_temp": 253,
+  "fuel_water_content": 25,
+  "fuel_density": 839.2,
+  "fuel_viscosity": 0.0024,
+  "pintle_sleeve_OD": 0.011,
+  "pintle_sleeve_thickness": 0.001,
+  "slot_width": 0.001,
+  "slot_height": 0.00289,
+  "num_slots": 14,
+  "area_reduction_ratio": 0.3,
+  "pintle_gap_length": 0.03,
+  "pintle_gap_OD": 0.01194,
+  "alpha": 0.69813,
+  "throat_area": 0.0016242785335254294
+}
