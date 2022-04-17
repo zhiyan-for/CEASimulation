@@ -10,7 +10,7 @@ from rocketcea.blends import newFuelBlend
 data = json.load(open("variables.json"))
 
 Isoblend = newFuelBlend(fuelL = ["Isopropanol", "H2O"], fuelPcentL = [80, 20])
-C = CEA_Obj(oxName = "N2O", fuelName= Isoblend, pressure_units= 'Pa', specific_heat_units='kJ/kg-K', density_units = 'kg/m^3')
+C = CEA_Obj(oxName = "N2O", fuelName= Isoblend, pressure_units= 'Pa', specific_heat_units='kJ/kg-K', density_units = 'kg/m^3', temperature_units = 'K')
 
 # header function for the solver (can copy this format for other solver functions)
 def annular_gap_func(mdot, dp):
@@ -36,9 +36,9 @@ def mdot_ox_calc(p_tank, p_chamber, orifice: Orifice):
 
 
 def mdot_nozzle_calc(p_chamber, OF):
-    CHAMBER_TEMP = 2000
-    (MOLECULAR_MASS, gamma) = C.get_Chamber_MolWt_gamma(p_chamber, OF)
-    cp = C.get_Chamber_Cp(p_chamber, OF) #in kJ/kg-K
+    CHAMBER_TEMP = C.get_Temperatures(p_chamber, OF)[1] #expansion ratio is set to default of 40
+    (MOLECULAR_MASS, gamma) = C.get_Throat_MolWt_gamma(p_chamber, OF)
+    cp = C.get_HeatCapacities(p_chamber, OF)[1] #in kJ/kg-K
     R = cp - (cp/gamma)
 
     return ((data["throat_area"] * p_chamber) / np.sqrt(CHAMBER_TEMP)) * np.sqrt(gamma / R) * math.pow(
