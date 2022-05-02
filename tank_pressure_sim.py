@@ -7,6 +7,9 @@ from octopus import Fluid, Manifold, Orifice, PropertySource, utils
 from rocketcea.cea_obj_w_units import CEA_Obj
 from rocketcea.blends import newFuelBlend
 
+# Plotting libraries
+import matplotlib.pyplot as plt
+
 #Some variables
 initial_ullage_pressure = 19e5
 initial_chamber_pressure = 10e5
@@ -119,6 +122,13 @@ def main():
         print(f"Time : {t_list[i]}")
         print(f"Tank Pressure: {p_tank_list[i]}")
         print(f"Chamber Pressure: {p_chamber_list[i]}")
+    
+    plt.xlabel("Time(s)")
+    plt.ylabel("Pressure (Pa)")
+    plt.plot (t_list, p_tank_list, label = "Tank Pressure (Pa)")
+    plt.plot(t_list, p_chamber_list, label = "Chamber Pressure (Pa)")
+    plt.legend()
+    plt.show()
 
 
 if __name__ == "__main__":
