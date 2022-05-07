@@ -80,7 +80,7 @@ def get_chamber_pressure_and_OF(p_tank, ox_area):
     ox_manifold = Manifold(fluid=oxidiser, parent=ox_property_source, A=1)
     ox_orifice = Orifice(manifold=ox_manifold, A=ox_area, Cd=0.7)
     # END INIT #
-    chamber_pressure = scipy.optimize.fsolve(func=mass_flow_diff, x0=np.array(10e5), args=(19e5, ox_orifice))[0]
+    chamber_pressure = scipy.optimize.fsolve(func=mass_flow_diff, x0=10e5, args=(p_tank, ox_orifice))[0]
     OF = mdot_fuel_calc(p_tank, chamber_pressure)/mdot_ox_calc(p_tank, chamber_pressure, ox_orifice)
     return [chamber_pressure, OF]
 
@@ -113,26 +113,26 @@ def main():
         mdot_ox = mdot_ox_calc(p_tank, p_chamber, ox_orifice)
         mdot_ox_list.append(mdot_ox)
         mdot_fuel_list.append(mdot_fuel)
-        # mdot = mdot_nozzle_calc(p_chamber, OF)
-        # prev_density = density
-        # density = get_density(ullage)
-        # Vdot = mdot/density
-        # propellant_volume = (1-ullage)*tank_volume - Vdot*dt
-        # ullage = (tank_volume - propellant_volume)/tank_volume
+        mdot = mdot_nozzle_calc(p_chamber, OF)
+        prev_density = density
+        density = get_density(ullage)
+        Vdot = mdot/density
+        propellant_volume = (1-ullage)*tank_volume - Vdot*dt
+        ullage = (tank_volume - propellant_volume)/tank_volume
 
 
-        ## Modelling Isentropic expansion of gas to determine new tank_pressure
-        # (MOLECULAR_MASS, gamma) = C.get_Throat_MolWt_gamma(p_chamber, OF)
-        # cp = C.get_HeatCapacities(p_chamber, OF)[1] #in kJ/kg-K
-        # R = cp - (cp/gamma) # in KJ/kg-K
-        # R = 1000*R  # in J/kg-K
-        # p_tank = ((density/prev_density)**(gamma))*p_tank #Using isentropic formula
+        # Modelling Isentropic expansion of gas to determine new tank_pressure
+        (MOLECULAR_MASS, gamma) = C.get_Throat_MolWt_gamma(p_chamber, OF)
+        cp = C.get_HeatCapacities(p_chamber, OF)[1] #in kJ/kg-K
+        R = cp - (cp/gamma) # in KJ/kg-K
+        R = 1000*R  # in J/kg-K
+        p_tank = ((density/prev_density)**(gamma))*p_tank #Using isentropic formula
 
-    # for i in range(len(t_list)):
-    #     print(f"Time : {t_list[i]}")
-    #     print(f"Tank Pressure: {p_tank_list[i]}")
-    #     print(f"Chamber Pressure: {p_chamber_list[i]}")
-    # print(OF)
+    for i in range(len(t_list)):
+        print(f"Time : {t_list[i]}")
+        print(f"Tank Pressure: {p_tank_list[i]}")
+        print(f"Chamber Pressure: {p_chamber_list[i]}")
+    print(OF)
 
     plt.xlabel("Tank Pressure(Pa)")
     plt.ylabel("Mass Flow Rate (kg s-1)")

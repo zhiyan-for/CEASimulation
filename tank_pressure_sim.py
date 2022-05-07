@@ -81,8 +81,16 @@ def get_chamber_pressure_and_OF(p_tank, ox_area):
     ox_manifold = Manifold(fluid=oxidiser, parent=ox_property_source, A=1)
     ox_orifice = Orifice(manifold=ox_manifold, A=ox_area, Cd=0.7)
     # END INIT #
-    chamber_pressure = scipy.optimize.fsolve(func=mass_flow_diff, x0=np.array(10e5), args=(19e5, ox_orifice))[0]
-    OF = mdot_fuel_calc(p_tank, chamber_pressure)/mdot_ox_calc(p_tank, chamber_pressure, ox_orifice)
+    chamber_pressure = scipy.optimize.fsolve(func=mass_flow_diff, x0=10e5, args=(p_tank, ox_orifice))[0]
+    
+    #just for observation
+    m_f=mdot_fuel_calc(p_tank, chamber_pressure)
+    m_o=mdot_ox_calc(p_tank, chamber_pressure, ox_orifice)
+    m_f_list.append(m_f)
+    m_o_list.append(m_o)
+    OF = m_o/m_f
+    m_n=mdot_nozzle_calc(chamber_pressure, OF)
+    m_n_list.append(m_n)
     return [chamber_pressure, OF]
 
 def main():
@@ -98,6 +106,12 @@ def main():
 
     p_tank_list = []
     p_chamber_list = []
+    global m_n_list 
+    m_n_list = []
+    global m_f_list
+    m_f_list = []
+    global m_o_list
+    m_o_list = []
 
     for t in t_list:
         p_tank_list.append(p_tank)
@@ -122,12 +136,22 @@ def main():
         print(f"Time : {t_list[i]}")
         print(f"Tank Pressure: {p_tank_list[i]}")
         print(f"Chamber Pressure: {p_chamber_list[i]}")
+        # print(f"Nozzle mass: {m_n_list[i]}")
+        # print(f"Nozzle mass: {m_f_list[i]}")
+        # print(f"Nozzle mass: {m_o_list[i]}")
     
-    plt.xlabel("Time(s)")
-    plt.ylabel("Pressure (Pa)")
-    plt.plot (t_list, p_tank_list, label = "Tank Pressure (Pa)")
-    plt.plot(t_list, p_chamber_list, label = "Chamber Pressure (Pa)")
-    plt.legend()
+    fig, axs = plt.subplots(2, sharex=True)
+    axs[0].plot (t_list, p_tank_list, label = "Tank Pressure (Pa)")
+    axs[0].plot(t_list, p_chamber_list, label = "Chamber Pressure (Pa)")
+    axs[0].set(xlabel="Time(s)", ylabel="Pressure (Pa)")
+    axs[0].legend()
+
+    axs[1].plot(t_list, m_f_list, label = "Fuel mass (kg)")
+    axs[1].plot(t_list, m_o_list, label = "Oxidiser mass (kg)")
+    axs[1].plot(t_list, m_n_list, label = "Nozzle mass (kg)")
+    axs[1].set(xlabel="Time(s)", ylabel="Mass (kg)")
+    axs[1].legend()
+    
     plt.show()
 
 

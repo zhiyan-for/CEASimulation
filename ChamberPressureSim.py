@@ -57,6 +57,9 @@ def mass_flow_diff(p_chamber, p_tank, orifice: Orifice):
 def main():
     # DO NOT EDIT -- MUST INCLUDE THIS INIT #
     # precalculating fuel flow area from datafile
+    #Define initial tank pressure
+    tank_pressure=19e5
+
     ox_area = data["slot_width"] * data["num_slots"] * (
             data["slot_height"] - data["pintle_sleeve_thickness"] * np.sin(data["alpha"])
     )
@@ -67,7 +70,7 @@ def main():
     ox_manifold = Manifold(fluid=oxidiser, parent=ox_property_source, A=1)
     ox_orifice = Orifice(manifold=ox_manifold, A=ox_area, Cd=0.7)
     # END INIT #
-    chamber_pressure = scipy.optimize.fsolve(func=mass_flow_diff, x0=np.array(10e5), args=(19e5, ox_orifice))[0]
+    chamber_pressure = scipy.optimize.fsolve(func=mass_flow_diff, x0=10e5, args=(tank_pressure, ox_orifice))[0]
 
     print(chamber_pressure)
 
